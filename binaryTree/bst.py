@@ -38,9 +38,7 @@ Ex. "1-2-3-4-5-"
 def getPostorder(root):
     if root is None:
         return ''
-    if root.left is None:
-        return str(root.val)
-    return getPostorder(root.left) + "-" + getPostorder(root.right) + "-" + str(root.val)
+    return getPostorder(root.left) + getPostorder(root.right) + str(root.val)+ "-"
 
 
 '''
@@ -54,9 +52,6 @@ Ex. "1-2-3-4-5-"
 def getPreorder(root):
     if root is None:
         return ''
-    if root.left is None:
-        return str(root.val) + '-'
-
     return str(root.val) + "-" + getPreorder(root.left) + getPreorder(root.right)
 
 
@@ -88,8 +83,15 @@ is a valid binary search tree
 '''
 
 
-def isBST(root):
-    return False
+# def isBST(root):
+#
+#
+#     if root.left > root:
+#         return False
+#
+#     if root.right < root:
+#         return False
+
 
 
 
@@ -117,7 +119,7 @@ if __name__ == '__main__':
     print("\nPreorder traversal of binary tree with 8 inserted is")
     print(getPreorder(root))
 
-
-    root2 = Node(5)
-    root2.left = Node(6)
-    print(isBST(root2))
+    #
+    # root2 = Node(5)
+    # root2.left = Node(6)
+    # print(isBST(root2))
