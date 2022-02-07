@@ -20,12 +20,6 @@ def getInorder(root):
         return ''
     return getInorder(root.left) + str(root.val) +  '-' + getInorder(root.right)
 
-    # if root:
-    #     getInorder(root.left)
-    #     print(root.val)
-    #     getInorder(root.right)
-
-
 '''
 A function that returns a string of the postorder 
 traversal of a binary tree. 
@@ -83,15 +77,9 @@ is a valid binary search tree
 '''
 
 
-# def isBST(root):
-#
-#
-#     if root.left > root:
-#         return False
-#
-#     if root.right < root:
-#         return False
+def isBST(root):
 
+    return False
 
 
 
@@ -119,7 +107,7 @@ if __name__ == '__main__':
     print("\nPreorder traversal of binary tree with 8 inserted is")
     print(getPreorder(root))
 
-    #
-    # root2 = Node(5)
-    # root2.left = Node(6)
-    # print(isBST(root2))
+
+    root2 = Node(5)
+    root2.left = Node(6)
+    print(isBST(root2))
