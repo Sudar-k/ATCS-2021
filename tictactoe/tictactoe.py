@@ -14,14 +14,10 @@ class TicTacToe:
         print("   " + str(0) + "  " + str(1) + "  " + str(2))
         for i in range(3):
             print(i, " " + "  ".join(self.board[i]))
-        return
 
     def is_valid_move(self, row, col):
-        if row > 2:
+        if row > 2 or col > 2:
             return False
-        if col > 2:
-            return False
-
         if self.board[row][col] != '-':
             return False
         return True
@@ -35,7 +31,7 @@ class TicTacToe:
 
         b = self.is_valid_move(row, col)
 
-        while b is False:
+        while not b:
             print("Please enter a valid move.")
             row = int(input("Enter a row: "))
             col = int(input("Enter a column: "))
@@ -52,8 +48,8 @@ class TicTacToe:
             self.take_random_turn(player)
 
     def take_random_turn(self, player):
-        r = random.randint(0,2)
-        c = random.randint(0,2)
+        r = random.randint(0, 2)
+        c = random.randint(0, 2)
         while not self.is_valid_move(r, c):
             r = random.randint(0, 2)
             c = random.randint(0, 2)
@@ -82,8 +78,8 @@ class TicTacToe:
         return win == d1 or win == d2
 
     def check_win(self, player):
-        if self.check_diag_win(player) is True or self.check_col_win(player) is True or self.check_row_win(
-                player) is True:
+        if self.check_diag_win(player) or self.check_col_win(player) or self.check_row_win(
+                player):
             return True
         return False
 
@@ -103,7 +99,7 @@ class TicTacToe:
             self.take_turn(player)
             self.print_board()
 
-        if self.check_tie():
-            print("The game has ended in a tie!")
-        else:
+        if self.check_win(player):
             print("Player", player, "has won!")
+        else:
+            print("The game has ended in a tie!")
