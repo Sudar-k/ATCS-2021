@@ -46,7 +46,19 @@ class TicTacToe:
 
     def take_turn(self, player):
         print(player + "'s Turn")
-        self.take_manual_turn(player)
+        if player == "X":
+            self.take_manual_turn(player)
+        else:
+            self.take_random_turn(player)
+
+    def take_random_turn(self, player):
+        r = random.randint(0,2)
+        c = random.randint(0,2)
+        while not self.is_valid_move(r, c):
+            r = random.randint(0, 2)
+            c = random.randint(0, 2)
+
+        self.place_player(player, r, c)
 
     def check_col_win(self, player):
         win = [player for x in range(3)]
