@@ -25,18 +25,60 @@ class TicTacToe:
     def place_player(self, player, row, col):
         self.board[row][col] = player
 
+    def minimax(self, player):
+        if self.check_win('O'):
+            return 10, None, None
+        if self.check_win('X'):
+            return -10, None, None
+        if self.check_tie():
+            return 0, None, None
+
+        if player == 'O':
+            best = -1738
+            opt_row = -1
+            opt_col = -1
+            for r in range(3):
+                for c in range(3):
+                    if self.is_valid_move(r, c):
+                        self.place_player('O', r, c)
+                        score = self.minimax('X')[0]
+                        self.place_player('-', r, c)
+                        if best < score:
+                            best = score
+                            opt_row = r
+                            opt_col = c
+            return best, opt_row, opt_col
+
+        if player == 'X':
+            worst = 1738
+            opt_row = -1
+            opt_col = -1
+            for r in range(3):
+                for c in range(3):
+                    if self.is_valid_move(r, c):
+                        self.place_player('X', r, c)
+                        score = self.minimax('O')[0]
+                        self.place_player('-', r, c)
+                        if worst > score:
+                            worst = score
+                            opt_row = r
+                            opt_col = c
+            return worst, opt_row, opt_col
+
     def take_manual_turn(self, player):
-        row = int(input("Enter a row: "))
-        col = int(input("Enter a column: "))
 
-        b = self.is_valid_move(row, col)
+        while True:
+            try:
+                row = int(input("Enter a row: "))
+                col = int(input("Enter a column: "))
 
-        while not b:
-            print("Please enter a valid move.")
-            row = int(input("Enter a row: "))
-            col = int(input("Enter a column: "))
-
-            b = self.is_valid_move(row, col)
+            except ValueError:
+                print("Please enter a valid integer.")
+                continue
+            else:
+                if self.is_valid_move(row, col):
+                    break
+                print("Please enter a valid move.")
 
         self.place_player(player, row, col)
 
@@ -45,7 +87,7 @@ class TicTacToe:
         if player == "X":
             self.take_manual_turn(player)
         else:
-            self.take_random_turn(player)
+            self.take_minimax_turn(player)
 
     def take_random_turn(self, player):
         r = random.randint(0, 2)
@@ -55,6 +97,10 @@ class TicTacToe:
             c = random.randint(0, 2)
 
         self.place_player(player, r, c)
+
+    def take_minimax_turn(self, player):
+        score, row, col = self.minimax(player)
+        self.place_player(player, row, col)
 
     def check_col_win(self, player):
         win = [player for x in range(3)]
