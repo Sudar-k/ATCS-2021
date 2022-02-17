@@ -25,14 +25,15 @@ class TicTacToe:
     def place_player(self, player, row, col):
         self.board[row][col] = player
 
-    def minimax(self, player):
+    def minimax(self, player, depth):
         if self.check_win('O'):
             return 10, None, None
         if self.check_win('X'):
             return -10, None, None
         if self.check_tie():
             return 0, None, None
-
+        if depth == 0:
+            return 0, None, None
         if player == 'O':
             best = -1738
             opt_row = -1
@@ -41,7 +42,7 @@ class TicTacToe:
                 for c in range(3):
                     if self.is_valid_move(r, c):
                         self.place_player('O', r, c)
-                        score = self.minimax('X')[0]
+                        score = self.minimax('X', depth - 1)[0]
                         self.place_player('-', r, c)
                         if best < score:
                             best = score
@@ -57,7 +58,7 @@ class TicTacToe:
                 for c in range(3):
                     if self.is_valid_move(r, c):
                         self.place_player('X', r, c)
-                        score = self.minimax('O')[0]
+                        score = self.minimax('O', depth - 1)[0]
                         self.place_player('-', r, c)
                         if worst > score:
                             worst = score
@@ -87,7 +88,7 @@ class TicTacToe:
         if player == "X":
             self.take_manual_turn(player)
         else:
-            self.take_minimax_turn(player)
+            self.take_minimax_turn(player, 2)
 
     def take_random_turn(self, player):
         r = random.randint(0, 2)
@@ -98,8 +99,8 @@ class TicTacToe:
 
         self.place_player(player, r, c)
 
-    def take_minimax_turn(self, player):
-        score, row, col = self.minimax(player)
+    def take_minimax_turn(self, player, depth):
+        score, row, col = self.minimax(player, depth)
         self.place_player(player, row, col)
 
     def check_col_win(self, player):
