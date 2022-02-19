@@ -1,5 +1,5 @@
 import random
-
+import time
 
 class TicTacToe:
     def __init__(self):
@@ -66,6 +66,52 @@ class TicTacToe:
                             opt_col = c
             return worst, opt_row, opt_col
 
+    def minimax_alpha_beta(self, player, alpha, beta, depth):
+        if self.check_win('O'):
+            return 10, None, None
+        if self.check_win('X'):
+            return -10, None, None
+        if self.check_tie():
+            return 0, None, None
+        if depth == 0:
+            return 0, None, None
+        if player == 'O':
+            best = -1738
+            opt_row = -1
+            opt_col = -1
+            for r in range(3):
+                for c in range(3):
+                    if self.is_valid_move(r, c):
+                        self.place_player('O', r, c)
+                        score = self.minimax('X', depth - 1)[0]
+                        self.place_player('-', r, c)
+                        if best < score:
+                            best = score
+                            opt_row = r
+                            opt_col = c
+                            alpha = best
+                        if alpha >= beta:
+                            break
+            return best, opt_row, opt_col
+
+        if player == 'X':
+            worst = 1738
+            opt_row = -1
+            opt_col = -1
+            for r in range(3):
+                for c in range(3):
+                    if self.is_valid_move(r, c):
+                        self.place_player('X', r, c)
+                        score = self.minimax('O', depth - 1)[0]
+                        self.place_player('-', r, c)
+                        if worst > score:
+                            worst = score
+                            opt_row = r
+                            opt_col = c
+                            beta = worst
+                        if alpha >= beta:
+                            break
+            return worst, opt_row, opt_col
     def take_manual_turn(self, player):
 
         while True:
@@ -100,7 +146,10 @@ class TicTacToe:
         self.place_player(player, r, c)
 
     def take_minimax_turn(self, player, depth):
-        score, row, col = self.minimax(player, depth)
+        start = time.time()
+        score, row, col = self.minimax_alpha_beta(player, -10000, 10000, depth)
+        end = time.time()
+        print("This turn took:", end - start, "seconds")
         self.place_player(player, row, col)
 
     def check_col_win(self, player):
