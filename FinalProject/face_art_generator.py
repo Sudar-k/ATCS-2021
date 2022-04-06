@@ -96,6 +96,7 @@ from matplotlib.patches import Rectangle
 
 #Face Recognition with MTCNN
 
+ax = pyplot.gca()
 
 def draw_image_with_boxes(filename, result_list):
     images = []
@@ -107,7 +108,7 @@ def draw_image_with_boxes(filename, result_list):
     # plot the image
     pyplot.imshow(data)
     # get the context for drawing boxes
-    ax = pyplot.gca()
+
     # plot each box
     for result in result_list:
         # get coordinates
@@ -126,6 +127,8 @@ def draw_image_with_boxes(filename, result_list):
 
     # show the plot
     pyplot.show()
+    return images, coords
+
 
 #
 #
@@ -156,18 +159,58 @@ while True:
 video_capture.release()
 cv2.destroyAllWindows()
 
+# Cartoonifying Image
+def color_quantization(img, k):
+# Transform the image
+  data = np.float32(img).reshape((-1, 3))
+
+# Determine criteria
+  criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 20, 0.001)
+
+# Implementing K-Means
+  ret, label, center = cv2.kmeans(data, k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+  center = np.uint8(center)
+  result = center[label.flatten()]
+  result = result.reshape(img.shape)
+  return result
+
+def edge_mask(img, line_size, blur_value):
+  gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+  gray_blur = cv2.medianBlur(gray, blur_value)
+  edges = cv2.adaptiveThreshold(gray_blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, line_size, blur_value)
+  return edges
+
+
+
+def image_to_cartoon(filename):
+    img = cv2.imread('pic.jpg')
+    line_size = 7
+    blur_value = 7
+
+    edges = edge_mask(img, line_size, blur_value)
+
+
+    total_color = 9
+
+    img = color_quantization(img, total_color)
+
+
+    blurred = cv2.bilateralFilter(img, d=7, sigmaColor=200,sigmaSpace=200)
+
+
+    cartoon = cv2.bitwise_and(blurred, blurred, mask=edges)
+    cv2.imshow('cartoon', cartoon)
+
 
 filename = 'pic.jpg'
 pixels = pyplot.imread(filename)
 
 detector = MTCNN()
 faces = detector.detect_faces(pixels)
+image_to_cartoon()
+imgs, crds = draw_image_with_boxes(filename, faces)
 
-images, coords, = draw_image_with_boxes(filename, faces)
 
 print("hello world")
-print(images)
-print(coords)
-
 # deletes picture after it's been taken
 os.remove("pic.jpg")
