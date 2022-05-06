@@ -212,5 +212,5 @@ imgs, crds = draw_image_with_boxes(filename, faces)
 
 
 print("hello world")
-# deletes picture after it's been taken
+# deletes picture after it has been taken
 os.remove("pic.jpg")
