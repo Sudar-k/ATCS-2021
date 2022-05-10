@@ -3,13 +3,10 @@
 import tensorflow as tf
 import numpy as np
 from PIL import Image
-import imageio
-from tensorflow.python import keras
-from keras import layers
 import cv2
 import os
 from mtcnn.mtcnn import MTCNN
-from matplotlib import pyplot
+from matplotlib import pyplot as plt
 from matplotlib.patches import Rectangle
 
 #https://www.tensorflow.org/tutorials/generative/dcgan
@@ -96,7 +93,7 @@ from matplotlib.patches import Rectangle
 
 #Face Recognition with MTCNN
 
-ax = pyplot.gca()
+ax = plt.gca()
 
 def draw_image_with_boxes(filename, result_list):
     images = []
@@ -106,7 +103,7 @@ def draw_image_with_boxes(filename, result_list):
     # data = pyplot.imread(filename)
     data = Image.open(filename)
     # plot the image
-    pyplot.imshow(data)
+    plt.imshow(data)
     # get the context for drawing boxes
 
     # plot each box
@@ -123,10 +120,10 @@ def draw_image_with_boxes(filename, result_list):
         a.save(img_name)
         counter += 1
         images.append(img_name)
-        coords.append((x, y, x + width, y + height))
+        coords.append((x, y))
 
     # show the plot
-    pyplot.show()
+    plt.show()
     return images, coords
 
 
@@ -182,15 +179,15 @@ def edge_mask(img, line_size, blur_value):
 
 
 
-def image_to_cartoon(filename):
-    img = cv2.imread('pic.jpg')
+def image_to_cartoon(file):
+    img = cv2.imread(file)
     line_size = 7
     blur_value = 7
 
     edges = edge_mask(img, line_size, blur_value)
 
 
-    total_color = 9
+    total_color = 13
 
     img = color_quantization(img, total_color)
 
@@ -199,18 +196,48 @@ def image_to_cartoon(filename):
 
 
     cartoon = cv2.bitwise_and(blurred, blurred, mask=edges)
-    cv2.imshow('cartoon', cartoon)
+    return cartoon
 
 
-filename = 'pic.jpg'
-pixels = pyplot.imread(filename)
+filename = 'ppl.jpeg'
+pixels = plt.imread(filename)
 
 detector = MTCNN()
 faces = detector.detect_faces(pixels)
-image_to_cartoon()
+
 imgs, crds = draw_image_with_boxes(filename, faces)
 
+cartoons = []
+counter = 0
+for i in imgs:
+    cartoon = image_to_cartoon(i)
+    img_name = "cartoon_{}.jpg".format(counter)
+    cv2.imwrite(img_name, cartoon)
+    counter += 1
+    cartoons.append(img_name)
+
+
+# cartoon = image_to_cartoon('face_0.jpg')
+# cv2.imwrite("cartoon.jpg", cartoon)
+img1 = Image.open(filename)
+for i in range(len(cartoons)):
+    c_img = Image.open(cartoons[i])
+    img1.paste(c_img, crds[i])
+
+
+
+# cartoon_img = Image.open('cartoon.jpg')
+
+# img1.paste(cartoon_img, crds[0])
+# cv2.imshow()
+img1.show()
 
 print("hello world")
-# deletes picture after it has been taken
+# deletes picture after it's been taken
+
+for c in cartoons:
+    os.remove(c)
+
+for f in imgs:
+    os.remove(f)
 os.remove("pic.jpg")
